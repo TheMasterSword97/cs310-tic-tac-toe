@@ -1,52 +1,48 @@
 package edu.jsu.mcis;
-
-public class TicTacToeController {
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.*;
+public class TicTacToeController implements ActionListener {
 
     private final TicTacToeModel model;
     private final TicTacToeView view;
     
     /* CONSTRUCTOR */
 
-    public TicTacToeController(int width) {
-        
-        /* Initialize model, view, and width */
+    public TicTacToeController(final int width) 
+        {
 
-        model = new TicTacToeModel(width);
-        view = new TicTacToeView();
-        
-    }
+            /* Initialize model, view, and width */
 
-    public void start() {
+            model = new TicTacToeModel(width);
+            view = new TicTacToeView(this, width);
+
+        }
     
-        /* MAIN LOOP (repeats until game is over) */
-
-        /* Display the board using the View's "showBoard()", then use
-           "getNextMove()" to get the next move from the player.  Enter
-           the move (using the Model's "makeMark()", or display an error
-           using the View's "showInputError()" if the move is invalid. */
-
-       boolean gamestart;
-       do 
-                { //show the board 
-                    view.showBoard(model.toString());
-                    //get the move from player
-                    TicTacToeMove move = view.getNextMove(model.isXTurn());
-                            // output error if player input wrong move 
-                            if(!model.makeMark(move.getRow(), move.getCol()) )
-                                     {
-                                         view.showInputError();
-                                     }
-                            gamestart = (model.getResult() != Result.NONE );
-
-                }
-       while(!gamestart);
-        
-        /* After the game is over, show the final board and the winner */
-
-        view.showBoard(model.toString());
-
-        view.showResult(model.getResult().toString());
-        
+    public String getMarkAsString(int row,int col)
+        {
+         return (model.getMark(row,col).toString());   
+        }
+    public TicTacToeView getView()
+    {
+     return view;    
     }
+    
+   @Override
+   public void actionPerformed(ActionEvent action)
+   {
+       String act = action.toString();
+       act = act.substring (act.length() - 2);
+       int inp = Integer.parseInt(act);
+       int j = inp/10;
+       int k = inp%10;
+       model.makeMark(j,k);
+       view.updateSquares();
+       if(!model.getResult().equals(TicTacToeModel.Result.NONE))
+       {
+           view.showResult(model.getResult().toString());
+           view.disableSquares();
+       }
+   }
 
 }
